@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qanounia.fullname" . }}-backend
+  labels: {{- include "qanounia.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "qanounia.name" . }}-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "qanounia.name" . }}-backend
+        {{- include "qanounia.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "qanounia.serviceAccountName" . }}
+      containers:
+        - name: backend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "qanounia.fullname" . }}-secrets
+                  key: database_url
+          readinessProbe:
+            httpGet:
+              path: /v1/health/ready
+              port: 3000
+          livenessProbe:
+            httpGet:
+              path: /v1/health/live
+              port: 3000
+          resources: {{- toYaml .Values.resources | nindent 12 }}

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qanounia.fullname" . }}-backend
+  labels: {{- include "qanounia.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ include "qanounia.name" . }}-backend
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http

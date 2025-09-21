@@ -49,3 +49,5 @@ public/videos/video-bg-ourstory.mp4
 # Monorepo outputs
 /.turbo
 /apps/backend/storage
+!.env.example
+!apps/backend/.env.example

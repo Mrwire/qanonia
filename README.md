@@ -1,140 +1,100 @@
-# GeniusAD - Agence de Communication & Production
+# Qanounia Platform Monorepo
 
-GeniusAD est une agence de communication et production spécialisée dans l'événementiel corporate et grand public, le marketing alternatif, les roadshows et activations. Ce dépôt regroupe l'API NestJS, l'interface Next.js, les packages partagés ainsi que les artefacts d'infrastructure et de CI/CD.
+Qanounia est une plateforme SaaS destinée aux cabinets juridiques et comptables du Maroc/MENA. Elle centralise la gestion des dossiers, documents, signatures électroniques, archivage probatoire et facturation.
 
-## 🚀 Démarrage Rapide
+## 🎯 Objectifs clés
 
-### Prérequis
-- Node.js ≥ 18
-- pnpm ≥ 8
+- Architecture modulaire : backend NestJS, frontend Next.js, packages partagés.
+- Conformité : loi 53-05, eIDAS-ready, auditabilité complète.
+- Internationalisation : français et arabe (RTL) dès la base.
 
-### Installation
-```bash
-git clone https://github.com/Mrwire/qanonia.git
-cd qanonia
-pnpm install
-pnpm --filter frontend dev
-```
+## 🗂️ Structure du dépôt
 
-Le frontend sera accessible sur `http://localhost:3000`
-
-## 🏗️ Architecture
-
-### Monorepo Structure
 ```
 ├── apps/
-│   ├── frontend/          # Application Next.js
-│   └── backend/           # API NestJS
+│   ├── backend/          # API NestJS (services REST, Prisma, observabilité)
+│   └── frontend/         # Application Next.js 14 (App Router, i18n, Tailwind)
 ├── packages/
-│   ├── ui/               # Composants UI partagés
-│   ├── utils/            # Utilitaires partagés
-│   └── config/           # Configuration partagée
-└── docs/                 # Documentation
+│   ├── ui/               # Design system shadcn/ui enrichi
+│   └── utils/            # Utilitaires partagés (validation, formats)
+├── docs/                 # ADR, OpenAPI, runbooks, checklists
+├── infra/                # Docker Compose dev, chart Helm minimal, Dockerfiles
+├── scripts/              # Seeds, automatisation (en cours)
+└── .github/workflows/    # Pipelines CI/CD
 ```
 
-### Technologies
+## ⚙️ Prérequis
 
-#### Frontend
-- **Framework**: Next.js 14 avec App Router
-- **UI**: React 18 + TypeScript
-- **Styling**: Tailwind CSS
-- **State**: Zustand
-- **i18n**: next-intl (FR/AR/EN)
+- Node.js 20+
+- pnpm 9+
+- Docker (pour l'orchestration locale)
 
-#### Backend
-- **Framework**: NestJS
-- **Database**: Prisma ORM
-- **Auth**: JWT + Passport
-- **Queue**: BullMQ + Redis
-
-#### DevOps
-- **Monorepo**: pnpm workspaces + Turbo
-- **Containerization**: Docker
-- **Deployment**: Netlify + Railway
-
-## 📚 Scripts Disponibles
+## 🚀 Démarrage rapide
 
 ```bash
-# Développement
-pnpm dev                    # Tous les services
-pnpm --filter frontend dev  # Frontend seulement
-pnpm --filter backend dev   # Backend seulement
-
-# Build
-pnpm build                  # Build complet
-pnpm --filter frontend build
-
-# Tests
-pnpm test                   # Tous les tests
-pnpm test:e2e              # Tests end-to-end
-
-# Linting & Formatting
-pnpm lint                   # ESLint
-pnpm typecheck             # TypeScript
+pnpm install
+pnpm dev                  # lance backend + frontend (turbo)
 ```
 
-## 🌍 Internationalisation
+Pour utiliser Docker Compose (PostgreSQL, Redis, MinIO, backend, frontend) :
 
-Support multilingue avec next-intl:
-- 🇫🇷 Français (par défaut)
-- 🇸🇦 العربية
-- 🇬🇧 English
-
-## 📱 Features
-
-### Frontend
-- ✅ Design responsive et moderne
-- ✅ Support RTL pour l'arabe
-- ✅ Système de thèmes
-- ✅ Optimisation SEO
-- ✅ PWA ready
-
-### Backend
-- ✅ API RESTful + GraphQL
-- ✅ Authentification sécurisée
-- ✅ Upload de fichiers
-- ✅ Cache Redis
-- ✅ Rate limiting
-
-## 🚀 Déploiement
-
-### Environnements
-- **Development**: Local avec Next.js dev server
-- **Staging**: Netlify Preview
-- **Production**: Netlify + Railway
-
-### Variables d'environnement
 ```bash
-# Frontend
-NEXT_PUBLIC_API_URL=
-NEXT_PUBLIC_APP_URL=
-
-# Backend  
-DATABASE_URL=
-JWT_SECRET=
-REDIS_URL=
+cd infra
+docker compose -f docker-compose.dev.yml up --build
 ```
 
-## 🤝 Contribution
+## 🧱 Backend
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/amazing-feature`)
-3. Commit les changements (`git commit -m 'Add amazing feature'`)
-4. Push sur la branche (`git push origin feature/amazing-feature`)
-5. Ouvrir une Pull Request
+- Framework : NestJS 10, TypeScript strict, validation Zod.
+- ORM : Prisma + PostgreSQL 16 (`apps/backend/prisma/schema.prisma`).
+- Observabilité : pino (logs JSON), Terminus (health), OTel (à venir).
+- Scripts utiles :
+  - `pnpm --filter backend start:dev`
+  - `pnpm --filter backend test`
+  - `pnpm --filter backend migrate:dev`
 
-## 📄 License
+## 💻 Frontend
 
-Ce projet est sous licence propriétaire GeniusAD.
+- Next.js 14 (App Router), React 18.
+- Styling : TailwindCSS + design tokens `@qanounia/ui`.
+- i18n : next-intl (FR/AR), prise en charge RTL.
+- Gestion d'état : React Query, Zustand.
 
-## 📞 Contact
+## 🧩 Packages partagés
 
-- **Email**: contact@geniusad.com
-- **Website**: https://geniusad.com
-- **LinkedIn**: [GeniusAD](https://linkedin.com/company/geniusad)
+- `@qanounia/ui` : tokens de thème et composants réutilisables.
+- `@qanounia/utils` : helpers de validation (ISO date, etc.).
 
----
+## 🧪 Qualité
 
-<div align="center">
-  <strong>Made with ❤️ by GeniusAD Team</strong>
-</div>
+- Lint : `pnpm lint`
+- Tests unitaires : `pnpm test`
+- Typecheck : `pnpm typecheck`
+- Couverture : `pnpm test:coverage`
+
+## 📄 Documentation
+
+- ADR (`docs/architecture-decisions/`) : décisions structurantes.
+- OpenAPI (`docs/openapi/openapi.yaml`) : contrat REST initial.
+- Runbooks (`docs/runbooks/operations.md`) : opérations/migrations.
+- Checklists (`docs/checklists/security.md`) : sécurité & conformité.
+
+## ☁️ Déploiement
+
+- Dockerfiles dédiés : `infra/dockerfiles/backend.Dockerfile`, `infra/dockerfiles/frontend.Dockerfile`.
+- Chart Helm minimal (`infra/helm/qanounia`) pour K8s : backend + frontend, secrets basiques.
+- Variables d'env (exemple) : `apps/backend/.env.example`.
+
+## 🔐 Conformité & Sécurité
+
+- Hashage des mots de passe : Argon2/bcrypt (implémentation future).
+- Audit log exhaustif, RBAC par organisation.
+- Stockage chiffré (MinIO/S3 SSE) et journaux immutables (roadmap).
+
+## 📈 Roadmap prochaine itération
+
+1. Implémenter l’authentification (JWT + OAuth).
+2. Exposer POST `/v1/cases` avec Prisma + AuditLog.
+3. Mettre en place la base UI (shadcn) et pages Auth/Dashboard.
+
+Pour plus de détails, consultez les ADR et la documentation.
