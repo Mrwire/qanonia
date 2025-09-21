@@ -1,0 +1,6 @@
+{
+  "extends": "@qanounia/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": false
+  }
+}
