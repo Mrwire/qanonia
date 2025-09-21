@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qanounia.fullname" . }}-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "qanounia.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ include "qanounia.fullname" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontendImage.repository }}:{{ .Values.frontendImage.tag }}"
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: http://{{ include "qanounia.fullname" . }}-backend:{{ .Values.service.backendPort }}
+          ports:
+            - containerPort: {{ .Values.service.frontendPort }}
+          readinessProbe:
+            httpGet:
+              path: /fr
+              port: {{ .Values.service.frontendPort }}
+          livenessProbe:
+            httpGet:
+              path: /fr
+              port: {{ .Values.service.frontendPort }}

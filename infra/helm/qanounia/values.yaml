@@ -1,0 +1,19 @@
+image:
+  repository: ghcr.io/qanounia/backend
+  tag: latest
+frontendImage:
+  repository: ghcr.io/qanounia/frontend
+  tag: latest
+service:
+  type: ClusterIP
+  backendPort: 4000
+  frontendPort: 3000
+postgres:
+  host: postgres
+  port: 5432
+  database: qanounia
+  user: postgres
+  passwordSecretName: postgres-credentials
+redis:
+  host: redis
+  port: 6379

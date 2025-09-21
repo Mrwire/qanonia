@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qanounia.fullname" . }}-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "qanounia.fullname" . }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ include "qanounia.fullname" . }}-backend
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.passwordSecretName }}
+                  key: url
+            - name: REDIS_URL
+              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+          ports:
+            - containerPort: {{ .Values.service.backendPort }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.service.backendPort }}
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: {{ .Values.service.backendPort }}

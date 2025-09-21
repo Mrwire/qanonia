@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qanounia.fullname" . }}-backend
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "qanounia.fullname" . }}-backend
+  ports:
+    - name: http
+      port: {{ .Values.service.backendPort }}
+      targetPort: {{ .Values.service.backendPort }}
