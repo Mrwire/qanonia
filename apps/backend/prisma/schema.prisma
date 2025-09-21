@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  hash      String
+  locale    String   @default("fr")
+  role      Role
+  org       Org      @relation(fields: [orgId], references: [id])
+  orgId     String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  CLIENT
+}
+
+model Org {
+  id             String   @id @default(uuid())
+  name           String
+  billingProfile Json?
+  complianceFlags Json?
+  users          User[]
+  clients        Client[]
+  cases          Case[]
+  createdAt      DateTime @default(now())
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  org       Org      @relation(fields: [orgId], references: [id])
+  orgId     String
+  identity  Json
+  contacts  Json
+  cases     Case[]
+  createdAt DateTime @default(now())
+}
+
+enum CaseStatus {
+  DRAFT
+  REVIEW
+  SIGN
+  ARCHIVED
+}
+
+model Case {
+  id          String   @id @default(uuid())
+  org         Org      @relation(fields: [orgId], references: [id])
+  orgId       String
+  client      Client   @relation(fields: [clientId], references: [id])
+  clientId    String
+  title       String
+  status      CaseStatus @default(DRAFT)
+  assignees   Json
+  deadlines   Json?
+  createdAt   DateTime @default(now())
+  documents   Document[]
+  tasks       Task[]
+  signatures  SignatureRequest[]
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      String
+  templateId  String?
+  version     Int
+  storageKey  String
+  hash        String
+  metadata    Json
+  language    String
+  createdAt   DateTime @default(now())
+}
+
+model Template {
+  id              String   @id @default(uuid())
+  org             Org      @relation(fields: [orgId], references: [id])
+  orgId           String
+  name            String
+  kind            TemplateKind
+  variablesSchema Json
+  bodyRichText    String
+  createdAt       DateTime @default(now())
+}
+
+enum TemplateKind {
+  CONTRACT
+  PV
+  STATUTE
+}
+
+model SignatureRequest {
+  id         String   @id @default(uuid())
+  case       Case     @relation(fields: [caseId], references: [id])
+  caseId     String
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String
+  signers    Json
+  status     SignatureStatus
+  evidences  Json
+  timestamps Json
+  createdAt  DateTime @default(now())
+}
+
+enum SignatureStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+model Invoice {
+  id        String   @id @default(uuid())
+  org       Org      @relation(fields: [orgId], references: [id])
+  orgId     String
+  case      Case?    @relation(fields: [caseId], references: [id])
+  caseId    String?
+  amount    Decimal
+  currency  String
+  status    InvoiceStatus
+  dueDate   DateTime
+  pdfKey    String
+  payments  Payment[]
+  meta      Json?
+  createdAt DateTime @default(now())
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  FAILED
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+  provider  String
+  status    PaymentStatus
+  txRef     String
+  payload   Json
+  createdAt DateTime @default(now())
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model Workflow {
+  id          String   @id @default(uuid())
+  org         Org      @relation(fields: [orgId], references: [id])
+  orgId       String
+  name        String
+  states      Json
+  transitions Json
+  guards      Json?
+  createdAt   DateTime @default(now())
+}
+
+model Task {
+  id         String   @id @default(uuid())
+  case       Case     @relation(fields: [caseId], references: [id])
+  caseId     String
+  type       String
+  assigneeId String
+  dueAt      DateTime?
+  status     String
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String
+  orgId      String
+  entityType String
+  entityId   String
+  action     String
+  before     Json?
+  after      Json?
+  ip         String?
+  ua         String?
+  timestamp  DateTime @default(now())
+}

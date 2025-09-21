@@ -1,140 +1,65 @@
-# GeniusAD - Agence de Communication & Production
+# Qanounia Platform
 
-GeniusAD est une agence de communication et production spécialisée dans l'événementiel corporate et grand public, le marketing alternatif, les roadshows et activations. Ce dépôt regroupe l'API NestJS, l'interface Next.js, les packages partagés ainsi que les artefacts d'infrastructure et de CI/CD.
+Qanounia est une plateforme SaaS modulaire destinée aux cabinets juridiques et comptables de la région MENA. Elle fournit des services de gestion de dossiers, génération documentaire, signature électronique, facturation et analytique avec une conformité stricte aux exigences locales (loi 53-05) et européennes (eIDAS-ready).
 
-## 🚀 Démarrage Rapide
+## 🚀 Monorepo
 
-### Prérequis
-- Node.js ≥ 18
-- pnpm ≥ 8
+Ce dépôt utilise **pnpm workspaces** et **Turborepo** pour orchestrer les applications et packages partagés.
 
-### Installation
-```bash
-git clone https://github.com/Mrwire/qanonia.git
-cd qanonia
-pnpm install
-pnpm --filter frontend dev
 ```
-
-Le frontend sera accessible sur `http://localhost:3000`
-
-## 🏗️ Architecture
-
-### Monorepo Structure
-```
+.
 ├── apps/
-│   ├── frontend/          # Application Next.js
-│   └── backend/           # API NestJS
+│   ├── backend/   # API NestJS (REST v1)
+│   └── frontend/  # Next.js 14 App Router
 ├── packages/
-│   ├── ui/               # Composants UI partagés
-│   ├── utils/            # Utilitaires partagés
-│   └── config/           # Configuration partagée
-└── docs/                 # Documentation
+│   ├── ui/        # Design system shadcn étendu
+│   └── config/    # Configuration partagée (schemas, zod)
+├── infra/         # Docker Compose, Helm chart, manifests
+├── docs/          # ADR, OpenAPI, guides
+└── scripts/       # Seeds, migrations, smoke tests
 ```
 
-### Technologies
-
-#### Frontend
-- **Framework**: Next.js 14 avec App Router
-- **UI**: React 18 + TypeScript
-- **Styling**: Tailwind CSS
-- **State**: Zustand
-- **i18n**: next-intl (FR/AR/EN)
-
-#### Backend
-- **Framework**: NestJS
-- **Database**: Prisma ORM
-- **Auth**: JWT + Passport
-- **Queue**: BullMQ + Redis
-
-#### DevOps
-- **Monorepo**: pnpm workspaces + Turbo
-- **Containerization**: Docker
-- **Deployment**: Netlify + Railway
-
-## 📚 Scripts Disponibles
+## 📦 Installation
 
 ```bash
-# Développement
-pnpm dev                    # Tous les services
-pnpm --filter frontend dev  # Frontend seulement
-pnpm --filter backend dev   # Backend seulement
-
-# Build
-pnpm build                  # Build complet
-pnpm --filter frontend build
-
-# Tests
-pnpm test                   # Tous les tests
-pnpm test:e2e              # Tests end-to-end
-
-# Linting & Formatting
-pnpm lint                   # ESLint
-pnpm typecheck             # TypeScript
+pnpm install
 ```
 
-## 🌍 Internationalisation
+## 🧪 Scripts racine
 
-Support multilingue avec next-intl:
-- 🇫🇷 Français (par défaut)
-- 🇸🇦 العربية
-- 🇬🇧 English
+| Script | Description |
+| --- | --- |
+| `pnpm dev` | Lance les services en mode développement (`turbo run dev`). |
+| `pnpm build` | Build toutes les cibles. |
+| `pnpm lint` | Lint complet. |
+| `pnpm test` | Tests unitaires / intégration. |
+| `pnpm typecheck` | Vérification TypeScript. |
+| `pnpm migrate:dev` | Prisma migrations (backend). |
 
-## 📱 Features
+## 📚 Documentation
 
-### Frontend
-- ✅ Design responsive et moderne
-- ✅ Support RTL pour l'arabe
-- ✅ Système de thèmes
-- ✅ Optimisation SEO
-- ✅ PWA ready
+- [`docs/adr`](./docs/adr) : Architecture Decision Records.
+- [`docs/openapi/openapi.yaml`](./docs/openapi/openapi.yaml) : Contrats REST v1.
+- [`docs/runbooks`](./docs/runbooks) : Opérations (migrations, rollback, monitoring).
 
-### Backend
-- ✅ API RESTful + GraphQL
-- ✅ Authentification sécurisée
-- ✅ Upload de fichiers
-- ✅ Cache Redis
-- ✅ Rate limiting
+## 🛡️ Principes clés
 
-## 🚀 Déploiement
+- **Sécurité** : OWASP ASVS intermédiaire, RBAC, audit trail exhaustif.
+- **Internationalisation** : UI FR/AR avec RTL complet, backend multi-langue.
+- **Observabilité** : logs JSON (pino), traces OpenTelemetry, métriques Prometheus.
+- **Performance** : API P95 < 300ms (hors tâches asynchrones).
 
-### Environnements
-- **Development**: Local avec Next.js dev server
-- **Staging**: Netlify Preview
-- **Production**: Netlify + Railway
+## 🧭 Roadmap agents
 
-### Variables d'environnement
-```bash
-# Frontend
-NEXT_PUBLIC_API_URL=
-NEXT_PUBLIC_APP_URL=
-
-# Backend  
-DATABASE_URL=
-JWT_SECRET=
-REDIS_URL=
-```
+1. **AGENT_ARCHI** – scaffolding monorepo, ADR, CI/CD.
+2. **AGENT_BACKEND** – Auth, Users, Cases, Docgen endpoints.
+3. **AGENT_FRONTEND** – Pages Auth, Dashboard, Cases.
+4. **AGENT_DOCGEN** – moteur de rendu PDF/DOCX.
+5. **AGENT_ESIGN** – intégration provider-agnostique, webhooks.
+6. **AGENT_BILLING** – factures, paiements mock.
+7. **AGENT_WORKFLOWS** – moteur d’états, SLA, notifications.
+8. **AGENT_QA** – couverture 80%, smoke tests, pipeline vert.
 
 ## 🤝 Contribution
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/amazing-feature`)
-3. Commit les changements (`git commit -m 'Add amazing feature'`)
-4. Push sur la branche (`git push origin feature/amazing-feature`)
-5. Ouvrir une Pull Request
-
-## 📄 License
-
-Ce projet est sous licence propriétaire GeniusAD.
-
-## 📞 Contact
-
-- **Email**: contact@geniusad.com
-- **Website**: https://geniusad.com
-- **LinkedIn**: [GeniusAD](https://linkedin.com/company/geniusad)
-
----
-
-<div align="center">
-  <strong>Made with ❤️ by GeniusAD Team</strong>
-</div>
+Les contributions suivent un flux PR contrôlé. Merci de conserver une couverture de test ≥ 80%, un lint sans avertissement et une documentation à jour.

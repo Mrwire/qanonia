@@ -1,0 +1,11 @@
+{
+  "app": {
+    "title": "Tableau de bord",
+    "subtitle": "Vue d'ensemble des dossiers"
+  },
+  "kpi": {
+    "openCases": "Dossiers ouverts",
+    "pendingSignature": "En signature",
+    "overdue": "En retard"
+  }
+}

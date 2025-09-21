@@ -1,0 +1,261 @@
+openapi: 3.1.0
+info:
+  title: Qanounia API
+  version: 0.1.0
+servers:
+  - url: https://api.qanounia.test
+paths:
+  /v1/cases:
+    post:
+      summary: Create a case
+      operationId: createCase
+      tags:
+        - Cases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCaseRequest'
+      responses:
+        '201':
+          description: Case created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/RbacError'
+    get:
+      summary: List cases
+      operationId: listCases
+      tags:
+        - Cases
+      responses:
+        '200':
+          description: Cases list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Case'
+  /v1/cases/{id}:
+    get:
+      summary: Get case by id
+      operationId: getCase
+      tags:
+        - Cases
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Case details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseResponse'
+        '404':
+          description: Case not found
+  /v1/audit:
+    get:
+      summary: List audit logs
+      operationId: listAudit
+      tags:
+        - Audit
+      parameters:
+        - in: query
+          name: orgId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+  /v1/docgen/render:
+    post:
+      summary: Render a document from template
+      operationId: renderDocument
+      tags:
+        - Docgen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenderDocumentRequest'
+      responses:
+        '200':
+          description: Document rendered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenderDocumentResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/RbacError'
+        '404':
+          description: Template not found
+components:
+  schemas:
+    CreateCaseRequest:
+      type: object
+      required:
+        - title
+        - clientId
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        clientId:
+          type: string
+          format: uuid
+        assignees:
+          type: array
+          items:
+            type: string
+            format: uuid
+        deadline:
+          type: string
+          format: date-time
+    CaseResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Case'
+    Case:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - REVIEW
+            - SIGN
+            - ARCHIVED
+        assigneeIds:
+          type: array
+          items:
+            type: string
+        deadline:
+          type: string
+          format: date-time
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              message:
+                type: string
+              at:
+                type: string
+                format: date-time
+              actorRole:
+                type: string
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+        actorId:
+          type: string
+        orgId:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        action:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    RenderDocumentRequest:
+      type: object
+      required:
+        - templateId
+        - variables
+        - out
+        - locale
+      properties:
+        templateId:
+          type: string
+        variables:
+          type: object
+          additionalProperties: {}
+        out:
+          type: string
+          enum:
+            - pdf
+            - docx
+        locale:
+          type: string
+          enum:
+            - fr
+            - ar
+    RenderDocumentResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            documentId:
+              type: string
+              format: uuid
+            storageKey:
+              type: string
+            hash:
+              type: string
+              description: SHA-256 hash of the rendered document
+            downloadUrl:
+              type: string
+              format: uri
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    RbacError:
+      description: RBAC forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

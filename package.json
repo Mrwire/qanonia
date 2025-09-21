@@ -1,5 +1,5 @@
 {
-  "name": "geniusad",
+  "name": "qanounia",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@9.6.0",
@@ -12,8 +12,8 @@
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml}\"",
-    "migrate:dev": "pnpm --filter backend migrate:dev",
-    "migrate:deploy": "pnpm --filter backend migrate:deploy",
+    "migrate:dev": "pnpm --filter @qanounia/backend migrate:dev",
+    "migrate:deploy": "pnpm --filter @qanounia/backend migrate:deploy",
     "test:coverage": "turbo run test -- --coverage"
   },
   "devDependencies": {

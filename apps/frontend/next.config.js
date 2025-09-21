@@ -4,7 +4,7 @@ module.exports = withNextIntl({
   experimental: {
     typedRoutes: true,
   },
-  transpilePackages: ['@qanounia/ui', '@qanounia/utils'],
+  transpilePackages: ['@qanounia/ui'],
   images: {
     remotePatterns: [
       {
