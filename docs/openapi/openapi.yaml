@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: Qanounia Public API
+  version: 0.1.0
+  description: >-
+    REST API contract for the Qanounia platform. This document is a scaffold and will be
+    refined as services are implemented.
+servers:
+  - url: https://api.qanounia.com
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+paths:
+  /v1/health/live:
+    get:
+      summary: Liveness probe
+      operationId: getLiveness
+      responses:
+        '200':
+          description: Service is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /v1/health/ready:
+    get:
+      summary: Readiness probe
+      operationId: getReadiness
+      responses:
+        '200':
+          description: Service is ready to serve traffic
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

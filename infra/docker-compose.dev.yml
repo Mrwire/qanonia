@@ -1,0 +1,71 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: qanounia
+      POSTGRES_USER: qanounia
+      POSTGRES_PASSWORD: qanounia
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+  minio:
+    image: minio/minio:RELEASE.2024-05-28T17-19-04Z
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: qanounia
+      MINIO_ROOT_PASSWORD: qanounia123
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio-data:/data
+
+  backend:
+    build:
+      context: ..
+      dockerfile: infra/dockerfiles/backend.Dockerfile
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    env_file:
+      - ../apps/backend/.env.example
+    environment:
+      DATABASE_URL: postgresql://qanounia:qanounia@postgres:5432/qanounia
+      REDIS_URL: redis://redis:6379
+      S3_ENDPOINT: http://minio:9000
+    ports:
+      - '3000:3000'
+    volumes:
+      - ../apps/backend:/app/apps/backend
+      - ../packages:/app/packages
+    command: pnpm --filter backend start:dev
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: infra/dockerfiles/frontend.Dockerfile
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/v1
+    ports:
+      - '3001:3000'
+    volumes:
+      - ../apps/frontend:/app/apps/frontend
+      - ../packages:/app/packages
+    command: pnpm --filter frontend dev -- --hostname 0.0.0.0 --port 3000
+
+volumes:
+  postgres-data:
+  minio-data:

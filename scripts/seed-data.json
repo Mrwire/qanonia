@@ -1,0 +1,70 @@
+{
+  "orgs": [
+    {
+      "name": "Cabinet Atlas Legal",
+      "locale": "fr",
+      "timezone": "Africa/Casablanca",
+      "billingProfile": {
+        "rc": "MA-12345",
+        "ice": "001234567000084",
+        "address": "10 Avenue Hassan II, Casablanca"
+      }
+    },
+    {
+      "name": "مكتب العدالة",
+      "locale": "ar",
+      "timezone": "Africa/Casablanca",
+      "billingProfile": {
+        "rc": "MA-78910",
+        "ice": "009876543210001",
+        "address": "12 شارع محمد الخامس، الرباط"
+      }
+    }
+  ],
+  "users": [
+    {
+      "email": "admin@atlaslegal.ma",
+      "role": "ADMIN",
+      "orgName": "Cabinet Atlas Legal",
+      "locale": "fr"
+    },
+    {
+      "email": "manager@justice.ma",
+      "role": "MANAGER",
+      "orgName": "مكتب العدالة",
+      "locale": "ar"
+    }
+  ],
+  "clients": [
+    {
+      "orgName": "Cabinet Atlas Legal",
+      "identity": {
+        "name": "Startup RifTech",
+        "ice": "001245678900003"
+      },
+      "contacts": [
+        {
+          "email": "contact@riftech.ma",
+          "phone": "+212612345678"
+        }
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "orgName": "Cabinet Atlas Legal",
+      "name": "Contrat de prestation",
+      "kind": "CONTRACT",
+      "language": "fr",
+      "variablesSchema": {
+        "type": "object",
+        "properties": {
+          "client.name": { "type": "string" },
+          "service.description": { "type": "string" }
+        },
+        "required": ["client.name", "service.description"]
+      },
+      "body": "## Contrat\nBonjour {{client.name}},\n\nDescription: {{service.description}}."
+    }
+  ]
+}
